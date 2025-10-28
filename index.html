@@ -150,12 +150,16 @@
     <div id="header"><!-- Header -->
 
         <ul class="social_panel">
-            <li><a href="https://www.facebook.com/isti.koncz" title="Facebook Profile" class="blue-darker"><img
-                        src="img/facebook.png" width="24" height="24" alt="Facebook Profile" /></a></li>
-            <li><a href="https://www.instagram.com/isti.koncz" title="Instagram Profile" class="blue-darker"><img
-                        src="img/instagram.png" width="24" height="24" alt="Twitter Profile" /></a></li>
-            <li><a href="http://www.linkedin.com/in/isti.koncz" title="LinkedIn Profile" class="blue-dark"><img
-                        src="img/linkedin.png" width="24" height="24" alt="Linked In Profile" /></a></li>
+
+            <li><a target="_blank" href="https://www.facebook.com/isti.koncz" title="Facebook Profile"
+                    class="blue-darker"><img src="img/facebook.png" width="24" height="24" alt="Facebook Profile" /></a>
+            </li>
+            <li><a target="_blank" href="https://www.instagram.com/isti.koncz" title="Instagram Profile"
+                    class="blue-darker"><img src="img/instagram.png" width="24" height="24" alt="Twitter Profile" /></a>
+            </li>
+            <li><a target="_blank" href="https://www.linkedin.com/in/istván-róbert-koncz-bb0341322"
+                    title="LinkedIn Profile" class="blue-dark"><img src="img/linkedin.png" width="24" height="24"
+                        alt="Linked In Profile" /></a></li>
         </ul>
     </div><!-- End Header -->
     <div class="container_24">
@@ -265,9 +269,9 @@
 
                 <div class="item_tittle">
                     <h1>
-                        <a target="_blank" href="https://umfst.ro/en/">
-                            George Emil Palade University of Medicine, Pharmacy, Science and Technology of Târgu Mureș
-                        </a>
+                        <a target="_blank"
+                            title="Universitatea de Medicină, Farmacie, Științe și Tehnologie George Emil Palade din Târgu Mures /  George Emil Palade University of Medicine, Pharmacy, Science, and Technology of Targu Mures / UMFST G.E. Palade Târgu Mures / G.E. Palade UMPhST of Targu Mures"
+                            href="https://umfst.ro" bis_skin_checked="1">UMFST G.E. Palade Targu Mures</a>
                         <span>2023 – Present</span>
                     </h1>
                     <h2>Bachelor’s Degree in Computer Science | Târgu Mureș, Romania</h2>
@@ -275,10 +279,9 @@
 
                 <div class="item_tittle">
                     <h1>
-                        <a target="_blank" href="https://umfst.ro/en/">
-                            George Emil Palade University of Medicine, Pharmacy, Science and Technology of Târgu
-                            Mureș
-                        </a>
+                        <a target="_blank"
+                            title="Universitatea de Medicină, Farmacie, Științe și Tehnologie George Emil Palade din Târgu Mures /  George Emil Palade University of Medicine, Pharmacy, Science, and Technology of Targu Mures / UMFST G.E. Palade Târgu Mures / G.E. Palade UMPhST of Targu Mures"
+                            href="https://umfst.ro" bis_skin_checked="1">UMFST G.E. Palade Targu Mures</a>
                         <span>2019 – 2020</span>
                     </h1>
                     <h2>Master’s Degree in Medical Biotechnology | Târgu Mureș, Romania</h2>
@@ -513,6 +516,12 @@
                         <label for="Message">Message:</label><br />
                         <textarea name="Message" rows="20" cols="20" id="Message" required></textarea>
 
+                        <div id="captcha-container">
+                            <label for="captcha-input">Captcha:</label>
+                            <div id="captcha-text"></div>
+                            <input type="text" id="captcha-input" placeholder="Type the code above" required />
+                        </div>
+
                         <input type="submit" value="Send" class="submit-button" />
                     </form>
 
@@ -523,21 +532,46 @@
                 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
                 <script>
                     (function () {
-                        emailjs.init("rMK5jTtNZK1Sv042f");
+                        emailjs.init("RAyefs2j1wCc4lPqn");
                     })();
+
+                    function generateCaptcha() {
+                        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+                        let captcha = "";
+                        for (let i = 0; i < 5; i++) {
+                            captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+                        }
+                        document.getElementById("captcha-text").innerText = captcha;
+                        return captcha;
+                    }
+
+                    let currentCaptcha = generateCaptcha();
 
                     document.getElementById('contact-form').addEventListener('submit', function (event) {
                         event.preventDefault();
 
+                        const enteredCaptcha = document.getElementById('captcha-input').value.trim().toUpperCase();
+                        if (enteredCaptcha !== currentCaptcha) {
+                            document.getElementById('status-message').innerText = "Incorrect captcha, please try again.";
+                            currentCaptcha = generateCaptcha();
+                            return;
+                        }
+
                         const templateParams = {
-                            Name: document.getElementById('Name').value,
-                            Email: document.getElementById('Email').value,
-                            Message: document.getElementById('Message').value
+                            name: document.getElementById('Name').value,
+                            email: document.getElementById('Email').value,
+                            message: document.getElementById('Message').value
                         };
 
-                        emailjs.send("service_hjob54k", "template_2l2z8a7", templateParams)
+                        document.getElementById('status-message').innerText = "Sending...";
+
+                        emailjs.send("service_ovhiz3b", "template_yz19l3j", templateParams)
                             .then(function (response) {
-                                document.getElementById('status-message').innerText = "Message sent successfully!";
+                                const currentTime = new Date().toLocaleString();
+                                document.getElementById('status-message').innerText =
+                                    "Message sent successfully!\nSent at: " + currentTime;
+                                document.getElementById('contact-form').reset();
+                                currentCaptcha = generateCaptcha();
                             }, function (error) {
                                 document.getElementById('status-message').innerText = "Failed to send message. Please try again later.";
                             });
